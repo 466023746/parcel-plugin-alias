@@ -1,6 +1,6 @@
 {
   "name": "parcel-plugin-alias",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -14,5 +14,8 @@
   },
   "bugs": {
     "url": "https://github.com/466023746/parcel-plugin-alias/issues"
+  },
+  "peerDependencies": {
+    "parcel-bundler": "^1.6.2"
   }
 }
