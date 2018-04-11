@@ -1,30 +1,43 @@
-const fs = require('fs')
-const path = require('path')
+const fs = require('fs');
+const path = require('path');
 
-module.exports = function (bundler) {
-    let options
+module.exports = (bundler) => {
+    let options;
+
     try {
-        options = require(path.resolve(__dirname, '../../aliasrc'))
-    } catch(e) {}
+        options = require(path.resolve(__dirname, '../../aliasrc'));
+    } catch(e) {
+        // no handler
+    }
 
     if (options) {
         let originResolver = bundler.resolver;
         let originResolve = originResolver.resolve;
 
-        originResolver.resolve = function (filename, parent) {
+        originResolver.resolve = (filename, parent) => {
             if (filename) {
                 for (let name in options) {
-                    let alias = options[name]
+                    let alias = options[name];
 
                     if (filename === name || startsWith(filename, name + '/')) {
                         if (filename !== alias && !startsWith(filename, alias + '/')) {
-                            filename = alias + filename.substr(name.length)
+                            /**
+                             * compatible with new version(1.7.0)
+                             * @type {boolean}
+                             */
+                            let newVersion = !!originResolver.packageCache;
+
+                            if (newVersion) {
+                                filename = alias.replace(bundler.options.rootDir, '') + filename.substr(name.length);
+                            } else {
+                                filename = alias + filename.substr(name.length);
+                            }
                         }
                     }
                 }
             }
 
-            return originResolve.call(originResolver, filename, parent)
+            return originResolve.call(originResolver, filename, parent);
         }
     }
 }
